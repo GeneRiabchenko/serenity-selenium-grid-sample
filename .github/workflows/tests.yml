@@ -13,15 +13,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Check out the repository so later steps can access the source and pom.xml
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Install the JDK version the project is built with
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
+      # Cache the local Maven repository between runs, keyed on pom.xml, to speed up dependency resolution
       - name: Cache Maven dependencies
         uses: actions/cache@v4
         with:
@@ -30,16 +33,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven
 
+      # Build and start the TodoMVC app plus the Selenium Grid (hub + chrome/firefox nodes) via Docker Compose
       - name: Start the app and Selenium Grid
         run: docker compose up -d --build --scale chrome=8 --scale firefox=1
 
+      # Poll the hub's status endpoint until all nodes have registered and the Grid reports ready
       - name: Wait for the Grid to be ready
         run: |
           timeout 90 bash -c 'until curl -sf http://localhost:4444/wd/hub/status | grep -q "\"ready\": true"; do sleep 2; done'
 
+      # Run the Serenity/JUnit 5 acceptance test suite against the Grid
       - name: Run acceptance tests against the Grid
         run: mvn -B clean verify
 
+      # Publish the generated Serenity HTML report as a downloadable build artifact
       - name: Upload Serenity report
         if: always()
         uses: actions/upload-artifact@v4
@@ -47,18 +54,12 @@ jobs:
           name: serenity-report
           path: target/site/serenity
 
-      # Step 10: Deploy serenity report to GitHub Pages
-      - name: Deploy serenity report to Github Pages
-        if: always() # Runs this step if tests failed
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: target/site/serenity
-
+      # On failure, dump every container's logs to aid debugging directly from the CI output
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs
 
+      # Always stop and remove the Compose stack (containers, network, volumes) so runs don't leak state
       - name: Tear down the stack
         if: always()
         run: docker compose down -v
