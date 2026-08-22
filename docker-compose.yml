@@ -1,5 +1,5 @@
 services:
-  app:
+  todomvc:
     build: ./todomvc
     container_name: todomvc-app
     ports:

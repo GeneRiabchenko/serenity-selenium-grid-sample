@@ -42,7 +42,7 @@ src/test/resources/      serenity.conf, junit-platform.properties
 
    The Grid console is available at http://localhost:4444/ui and the app at
    http://localhost:3000. Note that the app is reached by the browser nodes
-   through the Docker network as `http://app` (its Compose service name), not
+   through the Docker network as `http://todomvc` (its Compose service name), not
    `localhost` — that's what `webdriver.base.url` in `serenity.conf` points to.
 
 2. Run the tests:

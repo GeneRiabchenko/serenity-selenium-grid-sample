@@ -9,7 +9,7 @@ import org.openqa.selenium.WebDriver;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@DefaultUrl("http://app")
+@DefaultUrl("http://todomvc")
 public class TodoMvcPage extends PageObject {
 
     private static final By NEW_TODO = By.cssSelector("[data-testid='new-todo']");
