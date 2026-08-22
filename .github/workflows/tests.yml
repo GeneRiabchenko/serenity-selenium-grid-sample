@@ -47,6 +47,14 @@ jobs:
           name: serenity-report
           path: target/site/serenity
 
+      # Step 10: Deploy serenity report to GitHub Pages
+      - name: Deploy serenity report to Github Pages
+        if: always() # Runs this step if tests failed
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: target/site/serenity
+
       - name: Show container logs on failure
         if: failure()
         run: docker compose logs
