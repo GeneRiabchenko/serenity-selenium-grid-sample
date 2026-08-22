@@ -1,7 +1,8 @@
 package com.serenitydojo.selenium.todomvc;
 
-import com.serenitydojo.selenium.todomvc.pageobjects.TodoMvcPage;
+import com.serenitydojo.selenium.todomvc.steps.TodoMvcSteps;
 import net.serenitybdd.annotations.Managed;
+import net.serenitybdd.annotations.Steps;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,35 +17,36 @@ class AddingTodoItemsTest {
     @Managed
     WebDriver driver;
 
-    TodoMvcPage todoMvcPage;
+    @Steps
+    TodoMvcSteps todoMvcSteps;
 
     @BeforeEach
     void resetApplicationState() {
-        todoMvcPage.resetTodos();
+        todoMvcSteps.startWithAnEmptyTodoList();
     }
 
     @Test
     void shouldAddANewTodoItem() {
-        todoMvcPage.addTodo("Buy some milk");
+        todoMvcSteps.addTodo("Buy some milk");
 
-        assertThat(todoMvcPage.getTodoTitles()).containsExactly("Buy some milk");
+        assertThat(todoMvcSteps.displayedTodoTitles()).containsExactly("Buy some milk");
     }
 
     @Test
     void shouldAddMultipleTodoItemsInOrder() {
-        todoMvcPage.addTodo("Buy some milk");
-        todoMvcPage.addTodo("Walk the dog");
-        todoMvcPage.addTodo("Write some tests");
+        todoMvcSteps.addTodo("Buy some milk");
+        todoMvcSteps.addTodo("Walk the dog");
+        todoMvcSteps.addTodo("Write some tests");
 
-        assertThat(todoMvcPage.getTodoTitles())
+        assertThat(todoMvcSteps.displayedTodoTitles())
                 .containsExactly("Buy some milk", "Walk the dog", "Write some tests");
     }
 
     @Test
     void shouldClearTheInputFieldAfterAddingAnItem() {
-        todoMvcPage.addTodo("Buy some milk");
-        todoMvcPage.addTodo("Walk the dog");
+        todoMvcSteps.addTodo("Buy some milk");
+        todoMvcSteps.addTodo("Walk the dog");
 
-        assertThat(todoMvcPage.getItemsLeftCount()).isEqualTo(2);
+        assertThat(todoMvcSteps.itemsLeftCount()).isEqualTo(2);
     }
 }

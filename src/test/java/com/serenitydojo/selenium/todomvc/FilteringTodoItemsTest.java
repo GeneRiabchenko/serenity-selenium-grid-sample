@@ -1,7 +1,8 @@
 package com.serenitydojo.selenium.todomvc;
 
-import com.serenitydojo.selenium.todomvc.pageobjects.TodoMvcPage;
+import com.serenitydojo.selenium.todomvc.steps.TodoMvcSteps;
 import net.serenitybdd.annotations.Managed;
+import net.serenitybdd.annotations.Steps;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,45 +17,46 @@ class FilteringTodoItemsTest {
     @Managed
     WebDriver driver;
 
-    TodoMvcPage todoMvcPage;
+    @Steps
+    TodoMvcSteps todoMvcSteps;
 
     @BeforeEach
     void resetApplicationState() {
-        todoMvcPage.resetTodos();
-        todoMvcPage.addTodo("Buy some milk");
-        todoMvcPage.addTodo("Walk the dog");
-        todoMvcPage.addTodo("Write some tests");
-        todoMvcPage.toggleTodo("Walk the dog");
+        todoMvcSteps.startWithAnEmptyTodoList();
+        todoMvcSteps.addTodo("Buy some milk");
+        todoMvcSteps.addTodo("Walk the dog");
+        todoMvcSteps.addTodo("Write some tests");
+        todoMvcSteps.toggleTodo("Walk the dog");
     }
 
     @Test
     void shouldShowAllItemsByDefault() {
-        assertThat(todoMvcPage.getTodoTitles())
+        assertThat(todoMvcSteps.displayedTodoTitles())
                 .containsExactly("Buy some milk", "Walk the dog", "Write some tests");
     }
 
     @Test
     void shouldShowOnlyActiveItems() {
-        todoMvcPage.filterByActive();
+        todoMvcSteps.filterByActive();
 
-        assertThat(todoMvcPage.getTodoTitles())
+        assertThat(todoMvcSteps.displayedTodoTitles())
                 .containsExactly("Buy some milk", "Write some tests");
     }
 
     @Test
     void shouldShowOnlyCompletedItems() {
-        todoMvcPage.filterByCompleted();
+        todoMvcSteps.filterByCompleted();
 
-        assertThat(todoMvcPage.getTodoTitles()).containsExactly("Walk the dog");
+        assertThat(todoMvcSteps.displayedTodoTitles()).containsExactly("Walk the dog");
     }
 
     @Test
     void shouldReturnToAllItemsAfterFilteringByActiveAndCompleted() {
-        todoMvcPage.filterByActive();
-        todoMvcPage.filterByCompleted();
-        todoMvcPage.filterByAll();
+        todoMvcSteps.filterByActive();
+        todoMvcSteps.filterByCompleted();
+        todoMvcSteps.filterByAll();
 
-        assertThat(todoMvcPage.getTodoTitles())
+        assertThat(todoMvcSteps.displayedTodoTitles())
                 .containsExactly("Buy some milk", "Walk the dog", "Write some tests");
     }
 }

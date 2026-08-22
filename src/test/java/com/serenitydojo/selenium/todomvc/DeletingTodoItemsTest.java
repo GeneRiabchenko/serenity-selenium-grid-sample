@@ -1,7 +1,8 @@
 package com.serenitydojo.selenium.todomvc;
 
-import com.serenitydojo.selenium.todomvc.pageobjects.TodoMvcPage;
+import com.serenitydojo.selenium.todomvc.steps.TodoMvcSteps;
 import net.serenitybdd.annotations.Managed;
+import net.serenitybdd.annotations.Steps;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,27 +17,28 @@ class DeletingTodoItemsTest {
     @Managed
     WebDriver driver;
 
-    TodoMvcPage todoMvcPage;
+    @Steps
+    TodoMvcSteps todoMvcSteps;
 
     @BeforeEach
     void resetApplicationState() {
-        todoMvcPage.resetTodos();
-        todoMvcPage.addTodo("Buy some milk");
-        todoMvcPage.addTodo("Walk the dog");
+        todoMvcSteps.startWithAnEmptyTodoList();
+        todoMvcSteps.addTodo("Buy some milk");
+        todoMvcSteps.addTodo("Walk the dog");
     }
 
     @Test
     void shouldDeleteATodoItem() {
-        todoMvcPage.deleteTodo("Buy some milk");
+        todoMvcSteps.deleteTodo("Buy some milk");
 
-        assertThat(todoMvcPage.getTodoTitles()).containsExactly("Walk the dog");
+        assertThat(todoMvcSteps.displayedTodoTitles()).containsExactly("Walk the dog");
     }
 
     @Test
     void shouldLeaveTheListEmptyWhenAllItemsAreDeleted() {
-        todoMvcPage.deleteTodo("Buy some milk");
-        todoMvcPage.deleteTodo("Walk the dog");
+        todoMvcSteps.deleteTodo("Buy some milk");
+        todoMvcSteps.deleteTodo("Walk the dog");
 
-        assertThat(todoMvcPage.hasNoTodos()).isTrue();
+        assertThat(todoMvcSteps.hasNoTodos()).isTrue();
     }
 }

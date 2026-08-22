@@ -1,7 +1,8 @@
 package com.serenitydojo.selenium.todomvc;
 
-import com.serenitydojo.selenium.todomvc.pageobjects.TodoMvcPage;
+import com.serenitydojo.selenium.todomvc.steps.TodoMvcSteps;
 import net.serenitybdd.annotations.Managed;
+import net.serenitybdd.annotations.Steps;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,44 +17,45 @@ class CompletingTodoItemsTest {
     @Managed
     WebDriver driver;
 
-    TodoMvcPage todoMvcPage;
+    @Steps
+    TodoMvcSteps todoMvcSteps;
 
     @BeforeEach
     void resetApplicationState() {
-        todoMvcPage.resetTodos();
-        todoMvcPage.addTodo("Buy some milk");
-        todoMvcPage.addTodo("Walk the dog");
+        todoMvcSteps.startWithAnEmptyTodoList();
+        todoMvcSteps.addTodo("Buy some milk");
+        todoMvcSteps.addTodo("Walk the dog");
     }
 
     @Test
     void shouldMarkATodoItemAsCompleted() {
-        todoMvcPage.toggleTodo("Buy some milk");
+        todoMvcSteps.toggleTodo("Buy some milk");
 
-        assertThat(todoMvcPage.isCompleted("Buy some milk")).isTrue();
-        assertThat(todoMvcPage.isCompleted("Walk the dog")).isFalse();
+        assertThat(todoMvcSteps.todoIsCompleted("Buy some milk")).isTrue();
+        assertThat(todoMvcSteps.todoIsCompleted("Walk the dog")).isFalse();
     }
 
     @Test
     void shouldReduceTheItemsLeftCountWhenATodoIsCompleted() {
-        todoMvcPage.toggleTodo("Buy some milk");
+        todoMvcSteps.toggleTodo("Buy some milk");
 
-        assertThat(todoMvcPage.getItemsLeftCount()).isEqualTo(1);
+        assertThat(todoMvcSteps.itemsLeftCount()).isEqualTo(1);
     }
 
     @Test
     void shouldMarkAllItemsAsCompletedUsingToggleAll() {
-        todoMvcPage.toggleAll();
+        todoMvcSteps.toggleAllTodos();
 
-        assertThat(todoMvcPage.isCompleted("Buy some milk")).isTrue();
-        assertThat(todoMvcPage.isCompleted("Walk the dog")).isTrue();
-        assertThat(todoMvcPage.getItemsLeftCount()).isZero();
+        assertThat(todoMvcSteps.todoIsCompleted("Buy some milk")).isTrue();
+        assertThat(todoMvcSteps.todoIsCompleted("Walk the dog")).isTrue();
+        assertThat(todoMvcSteps.itemsLeftCount()).isZero();
     }
 
     @Test
     void shouldClearCompletedItems() {
-        todoMvcPage.toggleTodo("Buy some milk");
-        todoMvcPage.clearCompleted();
+        todoMvcSteps.toggleTodo("Buy some milk");
+        todoMvcSteps.clearCompletedTodos();
 
-        assertThat(todoMvcPage.getTodoTitles()).containsExactly("Walk the dog");
+        assertThat(todoMvcSteps.displayedTodoTitles()).containsExactly("Walk the dog");
     }
 }
