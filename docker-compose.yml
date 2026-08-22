@@ -1,6 +1,6 @@
 services:
   app:
-    build: ./app
+    build: ./todomvc
     container_name: todomvc-app
     ports:
       - "3000:80"

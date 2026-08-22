@@ -6,7 +6,7 @@ target/
 .classpath
 
 node_modules/
-app/dist/
+todomvc/dist/
 
 .allure/
 allure-results/

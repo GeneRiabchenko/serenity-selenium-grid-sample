@@ -12,7 +12,7 @@ purely through Selenium WebDriver's `RemoteWebDriver`.
 ## Stack
 
 - Java 17
-- Serenity BDD 4 (`serenity-core`, `serenity-junit5`)
+- Serenity BDD 5 (`serenity-core`, `serenity-junit5`)
 - JUnit 5 (parallel execution enabled)
 - Selenium WebDriver (`RemoteWebDriver` against Selenium Grid)
 - Docker Compose: React (Vite) TodoMVC app + `selenium/hub` + `selenium/node-chrome` + `selenium/node-firefox`
@@ -20,7 +20,7 @@ purely through Selenium WebDriver's `RemoteWebDriver`.
 ## Project layout
 
 ```
-app/                    React (Vite) TodoMVC application + Dockerfile
+todomvc/                React (Vite) TodoMVC application + Dockerfile
 docker-compose.yml       App + Selenium Grid (hub, chrome, firefox)
 src/test/java/...        Serenity page object + JUnit 5 acceptance tests
 src/test/resources/      serenity.conf, junit-platform.properties
