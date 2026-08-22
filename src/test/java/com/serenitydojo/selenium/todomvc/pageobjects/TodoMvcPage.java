@@ -5,6 +5,7 @@ import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.core.pages.WebElementFacade;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.interactions.Actions;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,7 +55,10 @@ public class TodoMvcPage extends PageObject {
     }
 
     public void deleteTodo(String title) {
-        findTodoItem(title).find(TODO_DESTROY).click();
+        WebElementFacade itemToDelete = findTodoItem(title);
+        evaluateJavascript("arguments[0].scrollIntoView({block: 'center'});", itemToDelete);
+        new Actions(getDriver()).moveToElement(itemToDelete).perform();
+        itemToDelete.find(TODO_DESTROY).click();
     }
 
     public void toggleAll() {

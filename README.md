@@ -45,6 +45,11 @@ src/test/resources/      serenity.conf, junit-platform.properties
    through the Docker network as `http://todomvc` (its Compose service name), not
    `localhost` — that's what `webdriver.base.url` in `serenity.conf` points to.
 
+   While tests are running, open the Grid console's **Sessions** tab and click
+   a running session to watch its screen live over VNC — useful for debugging
+   without a local browser install. `SE_VNC_NO_PASSWORD=true` is set on both
+   node services, so the live view opens without prompting for a password.
+
 2. Run the tests:
 
    ```bash

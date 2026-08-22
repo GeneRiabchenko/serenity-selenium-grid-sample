@@ -1,4 +1,4 @@
-package com.serenitydojo.selenium.todomvc;
+package com.serenitydojo.selenium.todomvc.tests;
 
 import com.serenitydojo.selenium.todomvc.steps.TodoMvcSteps;
 import net.serenitybdd.annotations.Managed;

@@ -31,7 +31,7 @@ jobs:
             ${{ runner.os }}-maven
 
       - name: Start the app and Selenium Grid
-        run: docker compose up -d --build --scale chrome=2 --scale firefox=1
+        run: docker compose up -d --build --scale chrome=8 --scale firefox=1
 
       - name: Wait for the Grid to be ready
         run: |
