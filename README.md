@@ -22,8 +22,9 @@ purely through Selenium WebDriver's `RemoteWebDriver`.
 ```
 todomvc/                React (Vite) TodoMVC application + Dockerfile
 docker-compose.yml       App + Selenium Grid (hub, chrome, firefox)
-src/test/java/...        Serenity page object + JUnit 5 acceptance tests
+src/test/java/...        Serenity page object, step library + JUnit 5 acceptance tests
 src/test/resources/      serenity.conf, junit-platform.properties
+.github/workflows/       CI: the suite runs on Chrome and Firefox in parallel jobs
 ```
 
 ## Running locally
@@ -57,7 +58,8 @@ src/test/resources/      serenity.conf, junit-platform.properties
    ```
 
    Tests run in parallel (see `junit-platform.properties`), and the hub
-   distributes sessions across whichever Chrome/Firefox nodes are available.
+   distributes the sessions across the nodes of the selected browser
+   (Chrome by default, see **Configuration** to switch to Firefox).
 
 3. Open the Serenity report:
 
@@ -86,8 +88,17 @@ src/test/resources/      serenity.conf, junit-platform.properties
   run concurrently (`junit.jupiter.execution.parallel.config.fixed.parallelism`).
   Match this to the number of Grid node slots you scaled up.
 
+- `docker-compose.yml` — the `selenium/hub` and `selenium/node-*` image tags
+  default to `${SELENIUM_VERSION:-4.46.0}`. Keep that default equal to
+  `<selenium.version>` in `pom.xml`, so the Selenium client and the Grid run
+  the same version (CI fails if they differ). To try another Grid version
+  locally without editing the file, export `SELENIUM_VERSION` or put it in a
+  local, git-ignored `.env`.
+
 ## CI
 
-`.github/workflows/tests.yml` starts the same Docker Compose stack on GitHub
-Actions, waits for the Grid to report ready, runs `mvn verify`, and uploads
-the Serenity HTML report as a build artifact.
+`.github/workflows/tests.yml` runs a matrix of two jobs, one per browser
+(`chrome`, `firefox`). Each job starts its own Docker Compose stack (the app,
+the hub and 8 nodes of that browser), waits for the Grid to report ready, runs
+`mvn verify -Dwebdriver.remote.driver=<browser>`, and uploads the Serenity HTML
+report as a build artifact (`serenity-report-chrome`, `serenity-report-firefox`).
