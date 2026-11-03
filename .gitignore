@@ -10,3 +10,5 @@ todomvc/dist/
 
 .allure/
 allure-results/
+
+.env

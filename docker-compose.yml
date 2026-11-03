@@ -13,7 +13,7 @@ services:
       retries: 10
 
   selenium-hub:
-    image: selenium/hub:4.25.0
+    image: selenium/hub:${SELENIUM_VERSION:-4.46.0}
     container_name: selenium-hub
     ports:
       - "4442:4442"
@@ -28,7 +28,7 @@ services:
       retries: 15
 
   chrome:
-    image: selenium/node-chrome:4.25.0
+    image: selenium/node-chrome:${SELENIUM_VERSION:-4.46.0}
     shm_size: 2gb
     depends_on:
       selenium-hub:
@@ -44,7 +44,7 @@ services:
       - grid
 
   firefox:
-    image: selenium/node-firefox:4.25.0
+    image: selenium/node-firefox:${SELENIUM_VERSION:-4.46.0}
     shm_size: 2gb
     depends_on:
       selenium-hub:

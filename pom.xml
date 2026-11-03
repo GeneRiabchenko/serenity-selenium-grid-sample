@@ -15,6 +15,7 @@
 
         <serenity.version>5.3.11</serenity.version>
         <junit.jupiter.version>5.11.3</junit.jupiter.version>
+        <!-- Keep in sync with the default SELENIUM_VERSION (Grid image tag) in docker-compose.yml; CI checks it -->
         <selenium.version>4.46.0</selenium.version>
 
         <serenity-maven-plugin.version>5.3.11</serenity-maven-plugin.version>

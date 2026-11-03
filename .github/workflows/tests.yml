@@ -9,7 +9,14 @@ on:
 
 jobs:
   test:
+    name: test (${{ matrix.browser }})
     runs-on: ubuntu-latest
+
+    # Run the same suite once per browser; each job gets its own Docker Compose stack
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [ chrome, firefox ]
 
     steps:
       # Check out the repository so later steps can access the source and pom.xml
@@ -32,25 +39,33 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven
 
-      # Build and start the TodoMVC app plus the Selenium Grid (hub + chrome/firefox nodes) via Docker Compose
+      # Fail fast if the Selenium client (pom.xml) and the Grid image tags (docker-compose.yml) drift apart
+      - name: Check Selenium client and Grid versions match
+        run: |
+          client=$(sed -n 's:.*<selenium.version>\(.*\)</selenium.version>.*:\1:p' pom.xml | tr -d '\r')
+          grid=$(grep -o 'SELENIUM_VERSION:-[^}]*' docker-compose.yml | sed 's/.*:-//' | sort -u | tr -d '\r')
+          echo "Selenium client: $client, Selenium Grid: $grid"
+          test "$client" = "$grid"
+
+      # Build and start the TodoMVC app, the Grid hub and only the nodes of the browser under test
       - name: Start the app and Selenium Grid
-        run: docker compose up -d --build --scale chrome=8 --scale firefox=1
+        run: docker compose up -d --build --scale ${{ matrix.browser }}=8 todomvc selenium-hub ${{ matrix.browser }}
 
       # Poll the hub's status endpoint until all nodes have registered and the Grid reports ready
       - name: Wait for the Grid to be ready
         run: |
           timeout 90 bash -c 'until curl -sf http://localhost:4444/wd/hub/status | grep -q "\"ready\": true"; do sleep 2; done'
 
-      # Run the Serenity/JUnit 5 acceptance test suite against the Grid
+      # Run the Serenity/JUnit 5 acceptance test suite against the Grid in the matrix browser
       - name: Run acceptance tests against the Grid
-        run: mvn -B clean verify
+        run: mvn -B clean verify -Dwebdriver.remote.driver=${{ matrix.browser }}
 
       # Publish the generated Serenity HTML report as a downloadable build artifact
       - name: Upload Serenity report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: serenity-report
+          name: serenity-report-${{ matrix.browser }}
           path: target/site/serenity
 
       # On failure, dump every container's logs to aid debugging directly from the CI output
